@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software or theoretical framework, please cite it as below."
+authors:
+  - family-names: "Bales"
+    given-names: "Jason"
+    email: "jason.m.bales@gmail.com"
+title: "Replacing Gravity with the Heisenberg Uncertainty Principle: Unified Paired-Brane Catenoid Cosmology Across 21 Physical Sectors and 61 Orders of Magnitude"
+version: 1.0.0
+date-released: 2026-10-24
+license: CC-BY-4.0
+url: "https://github.com/jasonbales1/paired-brane-catenoid-cosmology"
+keywords:
+  - Emergent Gravity
+  - Heisenberg Uncertainty Principle
+  - Paired-Brane Cosmology
+  - Catenoid Minimal Surface
+  - Dark Matter
+  - Dark Energy
+  - SPARC Galaxy Rotation Curves
+  - Planck CMB Acoustic Peaks
+  - Quantum Gravity

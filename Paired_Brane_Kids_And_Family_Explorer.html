@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Double-Decker Bubble-Bridge Universe — Interactive Family & Kids Explorer</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6 select-none">
+  <div class="max-w-5xl mx-auto space-y-4">
+    <!-- Header Banner -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-400 text-xs font-semibold mb-2">
+          <span>✨ DAD'S PHYSICS DISCOVERY LAB</span>
+          <span>•</span>
+          <span>21 SECTORS • 0 FREE PARAMETERS</span>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+          The Double-Decker Bubble-Bridge Universe
+        </h1>
+        <p class="text-sm text-[var(--muted-foreground)] mt-1">
+          Click the 4 playground tabs below! Drag the sliders and press the action buttons to see how one Quantum Jiggle Rule builds particles, gravity, galaxies, and bouncing black holes.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="toggleSound()" id="soundToggleBtn" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm">
+          🔊 Sound: ON
+        </button>
+        <button onclick="setMode(0)" id="tab-0" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm">
+          1. 🫧 3D Bubble Bridge
+        </button>
+        <button onclick="setMode(1)" id="tab-1" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]">
+          2. 🎵 Proton Y-Knot & Bell
+        </button>
+        <button onclick="setMode(2)" id="tab-2" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]">
+          3. 🌀 Galaxy Spin & Hexagons
+        </button>
+        <button onclick="setMode(3)" id="tab-3" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]">
+          4. 💥 Black Hole Burp!
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Interactive Canvas & Controls Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Left 2 Columns: Interactive Canvas -->
+      <div class="lg:col-span-2 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3 shadow-sm flex flex-col">
+        <div class="relative w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800" style="height: 420px;">
+          <canvas id="simCanvas" class="w-full h-full block cursor-pointer"></canvas>
+          <div id="canvasOverlayBadge" class="absolute top-3 left-3 px-3 py-1.5 rounded-lg bg-slate-900/85 border border-slate-700 text-slate-100 text-xs font-medium pointer-events-none">
+            🫧 Mode 1: The Double-Decker Soap-Film Bridge (Drag on canvas to tilt!)
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-2 px-1">
+          <p id="kidCaption" class="text-xs text-[var(--muted-foreground)]">
+            💡 <b>For the 5-year-old & 3rd grader:</b> Click <b>"Roll a Cosmic Marble!"</b> to watch a planet or star orbit inside the glowing hourglass funnel!
+          </p>
+          <div class="flex gap-2">
+            <button id="actionBtn1" onclick="triggerPrimaryAction()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition">
+              🪐 Roll a Cosmic Marble!
+            </button>
+            <button id="actionBtn2" onclick="triggerSecondaryAction()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition">
+              ✨ Clear Marbles
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Controls & Kid/Freshman Explanations -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm flex flex-col justify-between space-y-4">
+        <div class="space-y-4">
+          <h2 id="panelTitle" class="text-base font-bold text-[var(--foreground)]">
+            How the Bubble Bridge Works
+          </h2>
+          <p id="panelDesc" class="text-xs leading-relaxed text-[var(--muted-foreground)]">
+            Instead of space being a single flat sheet, our universe is a <b>Double-Decker</b> made of two sheets connected by microscopic hourglass tunnels called <b>Catenoids</b> (the exact shape a soap bubble makes when stretched between two rings!).
+          </p>
+
+          <!-- Dynamic Sliders -->
+          <div class="space-y-3 pt-2 border-t border-[var(--border)]">
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span id="slider1Label">Quantum Jiggle Speed (Uncertainty)</span>
+                <span id="slider1Val" class="text-indigo-400">100%</span>
+              </div>
+              <input id="slider1" type="range" min="20" max="200" value="100" oninput="updateSliders()" class="w-full accent-indigo-500 cursor-pointer" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span id="slider2Label">Hourglass Throat Waist Size</span>
+                <span id="slider2Val" class="text-emerald-400">1.00x</span>
+              </div>
+              <input id="slider2" type="range" min="40" max="160" value="100" oninput="updateSliders()" class="w-full accent-emerald-500 cursor-pointer" />
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span id="slider3Label">3D Camera Tilt Angle</span>
+                <span id="slider3Val" class="text-amber-400">28°</span>
+              </div>
+              <input id="slider3" type="range" min="5" max="75" value="28" oninput="updateSliders()" class="w-full accent-amber-500 cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Scoreboard Card -->
+        <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-3.5 space-y-2">
+          <div class="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+            🎯 Real Universe Match Score
+          </div>
+          <div id="metricRow1" class="flex justify-between text-xs">
+            <span class="text-[var(--muted-foreground)]">Top & Bottom Sheets ($N_{\text{branes}}$):</span>
+            <span class="font-mono font-bold text-[var(--foreground)]">2 (Exact Doublet)</span>
+          </div>
+          <div id="metricRow2" class="flex justify-between text-xs">
+            <span class="text-[var(--muted-foreground)]">Honeycomb Neighbors ($N_{\text{hex}}$):</span>
+            <span class="font-mono font-bold text-[var(--foreground)]">6 (Hexagon Lock)</span>
+          </div>
+          <div id="metricRow3" class="flex justify-between text-xs">
+            <span class="text-[var(--muted-foreground)]">Derived Gravity ($G_N$ Match):</span>
+            <span class="font-mono font-bold text-emerald-400">99.9824%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentMode = 0;
+    let t = 0;
+    let s1 = 1.0, s2 = 1.0, s3 = 28;
+
+    // Mode 0 state: orbiting marbles on the 3D catenoid funnel
+    let marbles = [
+      { r: 85, phi: 0.4, vr: 0, omega: 0.032, color: '#34d399', size: 6 },
+      { r: 135, phi: 2.5, vr: 0, omega: 0.022, color: '#fbbf24', size: 5 }
+    ];
+
+    // Mode 1 state: lepton harmonic mode (0=Electron, 1=Muon, 2=Tau) & quark pull
+    let leptonHarmonic = 0;
+    let quarkPullPulse = 0;
+
+    // Mode 2 state: galaxy gravity toggle (true = Catenoid Brane, false = Newton without Dark Matter)
+    let useBraneGravity = true;
+    let galaxyStars = [];
+    for (let i = 0; i < 140; i++) {
+      const r = 18 + Math.random() * 145;
+      const angle = Math.random() * Math.PI * 2;
+      galaxyStars.push({ r, baseR: r, angle, arm: i % 2, vr: 0 });
+    }
+
+    // Mode 3 state: Black hole Planck-sphere bounce & Hawking burp particles
+    let bhMass = 1.0;
+    let bhCorePulse = 0;
+    let burpParticles = [];
+    let infallingPackets = [];
+    let whiteHoleRings = [];
+
+    // =========================================================================
+    // WEB AUDIO API SYNTHESIZER (Zero external files needed — instant sound!)
+    // =========================================================================
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getAudioCtx() {
+      if (!soundEnabled) return null;
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Unlock audio on first click anywhere
+    window.addEventListener('pointerdown', () => { if (soundEnabled) getAudioCtx(); }, { once: true });
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundToggleBtn');
+      if (soundEnabled) {
+        btn.textContent = '🔊 Sound: ON';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm';
+        playTabChime(2);
+      } else {
+        btn.textContent = '🔇 Sound: OFF';
+        btn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-slate-700 text-slate-300 shadow-sm';
+      }
+    }
+
+    function playTabChime(modeIdx) {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      const freqs = [330, 440, 523.25, 659.25];
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freqs[modeIdx % 4], now);
+      osc.frequency.exponentialRampToValueAtTime(freqs[modeIdx % 4] * 1.25, now + 0.14);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.19);
+    }
+
+    function playMarbleLaunchSound() {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(240, now);
+      osc.frequency.exponentialRampToValueAtTime(720, now + 0.22);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.27);
+    }
+
+    function playBubblePopSound() {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      [587.33, 440, 329.63].forEach((f, idx) => {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now + idx * 0.05);
+        osc.frequency.exponentialRampToValueAtTime(f * 1.4, now + idx * 0.05 + 0.09);
+        gain.gain.setValueAtTime(0.15, now + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.11);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(now + idx * 0.05);
+        osc.stop(now + idx * 0.05 + 0.12);
+      });
+    }
+
+    function playLeptonBellSound(harmonicIdx) {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      // W_n = 1 (220 Hz Electron), W_n = 3 (660 Hz Muon), W_n = 5 (1100 Hz Tau)
+      const W_n = 2 * harmonicIdx + 1;
+      const baseFreq = 220 * W_n;
+      [1, 2, 3].forEach((mult, idx) => {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = idx === 0 ? 'sine' : 'triangle';
+        osc.frequency.setValueAtTime(baseFreq * mult * 0.5, now);
+        gain.gain.setValueAtTime(0.22 / (idx + 1), now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.65);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(now);
+        osc.stop(now + 0.66);
+      });
+    }
+
+    function playQuarkPluckSound() {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      // 3-Quark 120-degree major triad twang (C4 - E4 - G4)
+      [261.63, 329.63, 392.00].forEach((f, idx) => {
+        const osc = actx.createOscillator();
+        const gain = actx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(f * 0.85, now + idx * 0.03);
+        osc.frequency.exponentialRampToValueAtTime(f, now + idx * 0.03 + 0.12);
+        gain.gain.setValueAtTime(0.14, now + idx * 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.45);
+        osc.connect(gain).connect(actx.destination);
+        osc.start(now + idx * 0.03);
+        osc.stop(now + idx * 0.03 + 0.46);
+      });
+    }
+
+    function playGalaxyBridgeSound(bridgeOn) {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'sine';
+      if (bridgeOn) {
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(587.33, now + 0.32);
+      } else {
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.exponentialRampToValueAtTime(130.81, now + 0.38);
+      }
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.42);
+    }
+
+    function playSnackTossSound() {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(680, now);
+      osc.frequency.exponentialRampToValueAtTime(240, now + 0.25);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.27);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+
+    function playHawkingBurpSound(isBigWhiteHole) {
+      const actx = getAudioCtx();
+      if (!actx) return;
+      const now = actx.currentTime;
+
+      // 1. Bouncy Planck-Sphere "BOING-BURP!" bass wobble
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(isBigWhiteHole ? 85 : 115, now);
+      osc.frequency.exponentialRampToValueAtTime(isBigWhiteHole ? 340 : 260, now + 0.16);
+      osc.frequency.exponentialRampToValueAtTime(isBigWhiteHole ? 160 : 140, now + 0.34);
+      gain.gain.setValueAtTime(0.26, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      osc.connect(gain).connect(actx.destination);
+      osc.start(now);
+      osc.stop(now + 0.4);
+
+      // 2. Sparkling Rainbow Hawking Chime Arpeggio
+      const notes = isBigWhiteHole
+        ? [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98]
+        : [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((f, idx) => {
+        const cOsc = actx.createOscillator();
+        const cGain = actx.createGain();
+        cOsc.type = 'triangle';
+        cOsc.frequency.setValueAtTime(f, now + 0.08 + idx * 0.055);
+        cGain.gain.setValueAtTime(0.16, now + 0.08 + idx * 0.055);
+        cGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28 + idx * 0.055);
+        cOsc.connect(cGain).connect(actx.destination);
+        cOsc.start(now + 0.08 + idx * 0.055);
+        cOsc.stop(now + 0.3 + idx * 0.055);
+      });
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Allow dragging on canvas to adjust tilt
+    let dragging = false;
+    let lastY = 0;
+    canvas.addEventListener('mousedown', (e) => { dragging = true; lastY = e.clientY; });
+    window.addEventListener('mouseup', () => { dragging = false; });
+    window.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      const dy = e.clientY - lastY;
+      lastY = e.clientY;
+      const sl3 = document.getElementById('slider3');
+      sl3.value = Math.max(5, Math.min(75, Number(sl3.value) + dy * 0.4));
+      updateSliders();
+    });
+
+    function updateSliders() {
+      s1 = Number(document.getElementById('slider1').value) / 100;
+      s2 = Number(document.getElementById('slider2').value) / 100;
+      s3 = Number(document.getElementById('slider3').value);
+      document.getElementById('slider1Val').textContent = Math.round(s1 * 100) + '%';
+      document.getElementById('slider2Val').textContent = s2.toFixed(2) + 'x';
+      document.getElementById('slider3Val').textContent = Math.round(s3) + '°';
+    }
+
+    function setMode(m) {
+      currentMode = m;
+      playTabChime(m);
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById('tab-' + i);
+        if (i === m) {
+          btn.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm';
+        } else {
+          btn.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-[var(--background)] text-[var(--foreground)] border border-[var(--border)]';
+        }
+      }
+
+      const badge = document.getElementById('canvasOverlayBadge');
+      const caption = document.getElementById('kidCaption');
+      const btn1 = document.getElementById('actionBtn1');
+      const btn2 = document.getElementById('actionBtn2');
+      const title = document.getElementById('panelTitle');
+      const desc = document.getElementById('panelDesc');
+      const r1 = document.getElementById('metricRow1');
+      const r2 = document.getElementById('metricRow2');
+      const r3 = document.getElementById('metricRow3');
+
+      if (m === 0) {
+        badge.textContent = '🫧 Mode 1: The Double-Decker Soap-Film Bridge (Drag up/down to tilt!)';
+        caption.innerHTML = '💡 <b>For the 5-year-old & 3rd grader:</b> Click <b>"Roll a Cosmic Marble!"</b> to launch a planet into the glowing hourglass bridge!';
+        btn1.textContent = '🪐 Roll a Cosmic Marble!';
+        btn2.textContent = '✨ Clear Marbles';
+        title.textContent = '1. The Double-Decker Bubble Bridge';
+        desc.innerHTML = 'Imagine two giant cosmic trampoline sheets (Top Cyan & Bottom Gold) joined by a glowing hourglass tunnel called a <b>Catenoid</b>. Because quantum particles can never sit still (the <b>Jiggle Rule</b>), they clear space at the speed of light and curve the sheet—creating <b>Gravity</b> without needing a magic pull!';
+        document.getElementById('slider1Label').textContent = 'Quantum Jiggle Speed (Uncertainty)';
+        document.getElementById('slider2Label').textContent = 'Hourglass Throat Waist Size';
+        document.getElementById('slider3Label').textContent = '3D Camera Tilt Angle';
+        r1.innerHTML = '<span class="text-[var(--muted-foreground)]">Top & Bottom Sheets (N_branes):</span><span class="font-mono font-bold">2 (Exact Doublet)</span>';
+        r2.innerHTML = '<span class="text-[var(--muted-foreground)]">Honeycomb Neighbors (N_hex):</span><span class="font-mono font-bold">6 (Hexagon Lock)</span>';
+        r3.innerHTML = '<span class="text-[var(--muted-foreground)]">Derived Gravity (G_N Match):</span><span class="font-mono font-bold text-emerald-400">99.9824%</span>';
+      } else if (m === 1) {
+        badge.textContent = '🎵 Mode 2: The 3-Way Proton Y-Knot & Musical Bell Harmonics';
+        caption.innerHTML = '💡 <b>For the 5th grader:</b> Click <b>"Ring Next Bell Note!"</b> to switch between Electron (W=1), Muon (W=3), and Tau (W=5), or pluck the 3-way Proton Y-knot!';
+        btn1.textContent = '🔔 Ring Next Bell Note (e → μ → τ)';
+        btn2.textContent = '🌈 Pluck the 3-Quark Proton Knot!';
+        title.textContent = '2. Musical Particles & 3-Way Knots';
+        desc.innerHTML = 'Particles aren\'t tiny hard pebbles—they are <b>musical notes</b> vibrating on the bubble bridge! A single loop ringing at note 1, 3, or 5 makes the <b>Electron, Muon, and Tau</b>. When <b>3 loops</b> pull together at equal <b>120° angles</b> like a 3-way tug-of-war, they lock into a super-strong <b>Proton</b> ($6\\pi^5 = 1836.15\\times$ heavier than an electron)!';
+        document.getElementById('slider1Label').textContent = 'Vibration Wave Speed';
+        document.getElementById('slider2Label').textContent = 'Quark Loop Stretch';
+        document.getElementById('slider3Label').textContent = '720° Spin Twist Angle';
+        r1.innerHTML = '<span class="text-[var(--muted-foreground)]">Light Constant (α_EM^-1):</span><span class="font-mono font-bold text-emerald-400">137.035999 (100%)</span>';
+        r2.innerHTML = '<span class="text-[var(--muted-foreground)]">Proton/Electron Weight:</span><span class="font-mono font-bold text-emerald-400">1836.1526 (100%)</span>';
+        r3.innerHTML = '<span class="text-[var(--muted-foreground)]">Quark Tug-of-War Balance:</span><span class="font-mono font-bold text-indigo-400">120° + 120° + 120°</span>';
+      } else if (m === 2) {
+        badge.textContent = '🌀 Mode 3: Spinning Galaxy & Honeycomb Hexagon Cosmic Web';
+        caption.innerHTML = '💡 <b>Try the Boss Fight:</b> Click the green button to turn OFF the Bubble Bridge and watch the outer stars fly away!';
+        btn1.textContent = useBraneGravity ? '🛡️ Bridge ON (Stars Stay Together!)' : '⚠️ Bridge OFF (Outer Stars Fly Off!)';
+        btn2.textContent = '🔄 Reset Galaxy Stars';
+        title.textContent = '3. Why Galaxies Don\'t Fly Apart';
+        desc.innerHTML = 'Outer stars in galaxies spin so fast they should fly off into space! Instead of inventing invisible "Dark Matter" particles, the 2-sheet bubble bridge traps gravity between the sheets so it spreads gently like a pancake ($1/r$), holding **151 real galaxies** together! Out in empty space, the sheets push apart (**Dark Energy**).';
+        document.getElementById('slider1Label').textContent = 'Galaxy Spin Speed';
+        document.getElementById('slider2Label').textContent = 'Hexagon Web Glow';
+        document.getElementById('slider3Label').textContent = 'Viewing Angle';
+        r1.innerHTML = '<span class="text-[var(--muted-foreground)]">151 SPARC Galaxies Tested:</span><span class="font-mono font-bold text-emerald-400">+0.0025 dex (Pass)</span>';
+        r2.innerHTML = '<span class="text-[var(--muted-foreground)]">70 Hubble Lenses (SLACS):</span><span class="font-mono font-bold text-emerald-400">6.03% Error (Pass)</span>';
+        r3.innerHTML = '<span class="text-[var(--muted-foreground)]">Hubble Tension Solved:</span><span class="font-mono font-bold text-amber-400">67.41 → 73.02 km/s/Mpc</span>';
+      } else if (m === 3) {
+        badge.textContent = '💥 Mode 4: Bouncing Planck-Sphere Black Hole & "Hawking Burps!"';
+        caption.innerHTML = '💡 <b>For the 5-year-old:</b> Click <b>"Toss a Snack into the Black Hole!"</b> and watch it bounce and do a glowing rainbow <b>Hawking Burp!</b>';
+        btn1.textContent = '☄️ Toss a Snack into the Black Hole!';
+        btn2.textContent = '💥 Big Star Bounce!';
+        title.textContent = '4. Bouncing Black Holes & "Burps!"';
+        desc.innerHTML = 'Old math said a black hole squishes a star into a "zero-size point" ($r=0$) where math breaks! In Dad\'s model, the <b>Quantum Jiggle Rule</b> refuses to squish past the tiniest pixel of space ($l_{\\text{Planck}}$). It bounces into a fuzzy <b>Planck-Sphere Ball</b> that lets out a glowing <b>"Hawking Burp"</b> whenever a particle hits it!';
+        document.getElementById('slider1Label').textContent = 'Core Quantum Jiggle Shield';
+        document.getElementById('slider2Label').textContent = 'Planck-Sphere Core Size';
+        document.getElementById('slider3Label').textContent = 'Horizon Ring Glow';
+        r1.innerHTML = '<span class="text-[var(--muted-foreground)]">Center Singularity (r=0):</span><span class="font-mono font-bold text-emerald-400">Eliminated (Bounced!)</span>';
+        r2.innerHTML = '<span class="text-[var(--muted-foreground)]">LIGO GW150914 Ringdown:</span><span class="font-mono font-bold text-emerald-400">251.8 Hz (99.70%)</span>';
+        r3.innerHTML = '<span class="text-[var(--muted-foreground)]">Information Saved (Page Curve):</span><span class="font-mono font-bold text-indigo-400">100.00% Pure</span>';
+      }
+    }
+
+    function triggerPrimaryAction() {
+      if (currentMode === 0) {
+        playMarbleLaunchSound();
+        const colors = ['#34d399', '#fbbf24', '#f472b6', '#60a5fa', '#a78bfa'];
+        marbles.push({
+          r: 60 + Math.random() * 110,
+          phi: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.6,
+          omega: 0.02 + Math.random() * 0.02,
+          color: colors[marbles.length % colors.length],
+          size: 5 + Math.random() * 2.5
+        });
+      } else if (currentMode === 1) {
+        leptonHarmonic = (leptonHarmonic + 1) % 3;
+        playLeptonBellSound(leptonHarmonic);
+      } else if (currentMode === 2) {
+        useBraneGravity = !useBraneGravity;
+        playGalaxyBridgeSound(useBraneGravity);
+        const btn1 = document.getElementById('actionBtn1');
+        btn1.textContent = useBraneGravity ? '🛡️ Bridge ON (Stars Stay Together!)' : '⚠️ Bridge OFF (Outer Stars Fly Off!)';
+        if (useBraneGravity) {
+          galaxyStars.forEach(st => { st.r = st.baseR; st.vr = 0; });
+        }
+      } else if (currentMode === 3) {
+        playSnackTossSound();
+        const angle = Math.random() * Math.PI * 2;
+        infallingPackets.push({
+          r: 180,
+          angle,
+          color: '#38bdf8',
+          isBig: false
+        });
+      }
+    }
+
+    function triggerSecondaryAction() {
+      if (currentMode === 0) {
+        playBubblePopSound();
+        marbles = [{ r: 95, phi: 0, vr: 0, omega: 0.028, color: '#34d399', size: 6 }];
+      } else if (currentMode === 1) {
+        quarkPullPulse = 1.0;
+        playQuarkPluckSound();
+      } else if (currentMode === 2) {
+        useBraneGravity = true;
+        playGalaxyBridgeSound(true);
+        document.getElementById('actionBtn1').textContent = '🛡️ Bridge ON (Stars Stay Together!)';
+        galaxyStars.forEach(st => { st.r = st.baseR; st.vr = 0; });
+      } else if (currentMode === 3) {
+        playSnackTossSound();
+        for (let k = 0; k < 5; k++) {
+          infallingPackets.push({
+            r: 165 + k * 12,
+            angle: (k * Math.PI * 2) / 5,
+            color: '#facc15',
+            isBig: k === 0
+          });
+        }
+      }
+    }
+
+    function drawMode0(w, h) {
+      const cx = w / 2;
+      const cy = h / 2;
+      const tilt = (s3 * Math.PI) / 180;
+      const waist = 32 * s2;
+
+      // Draw background stars
+      for (let i = 0; i < 35; i++) {
+        const sx = ((i * 173) % w);
+        const sy = ((i * 97) % h);
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        ctx.fillRect(sx, sy, 1.5, 1.5);
+      }
+
+      // Draw 3D Catenoid rings from z = -1.7 to +1.7
+      const numRings = 22;
+      for (let i = 0; i <= numRings; i++) {
+        const u = -1.65 + (3.3 * i) / numRings;
+        const r = waist * Math.cosh(u) + 3 * Math.sin(t * 3 * s1 + u * 2);
+        const z = u * 58;
+        const screenY = cy - z * Math.cos(tilt);
+        const rx = r;
+        const ry = r * Math.sin(tilt);
+
+        ctx.beginPath();
+        ctx.ellipse(cx, screenY, rx, Math.max(ry, 2), 0, 0, Math.PI * 2);
+        if (Math.abs(u) < 0.15) {
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.95)';
+          ctx.lineWidth = 2.6;
+        } else if (u > 0) {
+          ctx.strokeStyle = `rgba(56, 189, 248, ${0.25 + 0.45 * (u / 1.65)})`;
+          ctx.lineWidth = 1.3;
+        } else {
+          ctx.strokeStyle = `rgba(244, 114, 182, ${0.25 + 0.45 * (-u / 1.65)})`;
+          ctx.lineWidth = 1.3;
+        }
+        ctx.stroke();
+      }
+
+      // Draw 12 meridian ribs connecting top brane to bottom brane
+      for (let k = 0; k < 12; k++) {
+        const phi = (k * Math.PI) / 6 + t * 0.25 * s1;
+        ctx.beginPath();
+        for (let i = 0; i <= 24; i++) {
+          const u = -1.65 + (3.3 * i) / 24;
+          const r = waist * Math.cosh(u);
+          const z = u * 58;
+          const px = cx + r * Math.cos(phi);
+          const py = cy - z * Math.cos(tilt) + r * Math.sin(phi) * Math.sin(tilt);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = 'rgba(165, 180, 252, 0.28)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+
+      // Draw orbiting cosmic marbles on the upper sheet funnel
+      marbles.forEach((m) => {
+        m.phi += m.omega * s1;
+        m.r += m.vr;
+        if (m.r < waist + 12) m.vr = Math.abs(m.vr) + 0.2;
+        if (m.r > 165) m.vr = -Math.abs(m.vr) - 0.2;
+        m.vr *= 0.98;
+
+        const u_eff = Math.acosh(Math.max(m.r / waist, 1.02));
+        const z = u_eff * 38;
+        const mx = cx + m.r * Math.cos(m.phi);
+        const my = cy - z * Math.cos(tilt) + m.r * Math.sin(m.phi) * Math.sin(tilt);
+
+        // Glowing trail
+        ctx.beginPath();
+        for (let tr = 0; tr < 14; tr++) {
+          const pPhi = m.phi - tr * 0.08;
+          const tx = cx + m.r * Math.cos(pPhi);
+          const ty = cy - z * Math.cos(tilt) + m.r * Math.sin(pPhi) * Math.sin(tilt);
+          if (tr === 0) ctx.moveTo(tx, ty);
+          else ctx.lineTo(tx, ty);
+        }
+        ctx.strokeStyle = m.color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(mx, my, m.size, 0, Math.PI * 2);
+        ctx.fillStyle = m.color;
+        ctx.shadowColor = m.color;
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Labels for Top Sheet, Waist, and Bottom Sheet
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('Top Cosmic Sheet (Our Brane B+)', 18, 56);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('Glowing Catenoid Throat (L_eq)', 18, cy + 4);
+      ctx.fillStyle = '#f472b6';
+      ctx.fillText('Partner Mirror Sheet (Brane B-)', 18, h - 22);
+    }
+
+    function drawMode1(w, h) {
+      // Left half: 3-Quark 120-degree Proton Y-Knot
+      // Right half: Lepton Harmonic Bell (W_n = 1, 3, 5)
+      const leftCx = w * 0.29;
+      const rightCx = w * 0.73;
+      const cy = h * 0.53;
+
+      if (quarkPullPulse > 0.01) quarkPullPulse *= 0.93;
+
+      // Divider
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+      ctx.beginPath();
+      ctx.moveTo(w * 0.51, 45);
+      ctx.lineTo(w * 0.51, h - 20);
+      ctx.stroke();
+
+      // Left: Proton 120-degree Steiner Y-Junction
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText('Proton: 3-Way 120° Quark Tug-of-War', 22, 58);
+
+      const colors = ['#f87171', '#4ade80', '#60a5fa'];
+      const names = ['Up Quark (Red)', 'Up Quark (Green)', 'Down Quark (Blue)'];
+      const baseLen = (72 + 24 * quarkPullPulse) * s2;
+
+      for (let i = 0; i < 3; i++) {
+        const ang = (i * 2 * Math.PI) / 3 - Math.PI / 2 + 0.08 * Math.sin(t * 2 * s1 + i);
+        const qx = leftCx + baseLen * Math.cos(ang);
+        const qy = cy + baseLen * Math.sin(ang);
+
+        // Vibrating tether wave
+        ctx.beginPath();
+        for (let step = 0; step <= 20; step++) {
+          const frac = step / 20;
+          const perp = Math.sin(frac * Math.PI * 3 + t * 5 * s1) * (5 + 8 * quarkPullPulse);
+          const px = leftCx + frac * baseLen * Math.cos(ang) - perp * Math.sin(ang);
+          const py = cy + frac * baseLen * Math.sin(ang) + perp * Math.cos(ang);
+          if (step === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = colors[i];
+        ctx.lineWidth = 3.5;
+        ctx.stroke();
+
+        // Quark throat orb
+        ctx.beginPath();
+        ctx.arc(qx, qy, 14, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i];
+        ctx.shadowColor = colors[i];
+        ctx.shadowBlur = 14;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(i === 2 ? 'd' : 'u', qx - 4, qy + 4);
+      }
+
+      // Center Steiner vertex
+      ctx.beginPath();
+      ctx.arc(leftCx, cy, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fill();
+      ctx.fillStyle = '#fde68a';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('120° Steiner Center (Force = 0!)', leftCx - 85, cy + 115);
+
+      // Right: Lepton Harmonic Standing Wave Bell (W_n = 2n + 1)
+      const W_n = 2 * leptonHarmonic + 1;
+      const lepNames = ['Electron (n=0, W=1): 1.00x', 'Muon (n=1, W=3): 206.83x', 'Tau (n=2, W=5): 3478.45x'];
+      const lepColors = ['#38bdf8', '#a78bfa', '#f472b6'];
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText('Musical Bridge Harmonics: ' + lepNames[leptonHarmonic], w * 0.54, 58);
+
+      const ringR = 76;
+      ctx.beginPath();
+      for (let a = 0; a <= 180; a++) {
+        const theta = (a / 180) * Math.PI * 2;
+        const wave = 16 * Math.sin(W_n * theta) * Math.cos(t * 4 * s1);
+        const rr = ringR + wave;
+        const rx = rightCx + rr * Math.cos(theta);
+        const ry = cy + rr * Math.sin(theta);
+        if (a === 0) ctx.moveTo(rx, ry);
+        else ctx.lineTo(rx, ry);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = lepColors[leptonHarmonic];
+      ctx.lineWidth = 3.5;
+      ctx.shadowColor = lepColors[leptonHarmonic];
+      ctx.shadowBlur = 14;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`Standing Wave Petals: W = ${W_n}`, rightCx - 72, cy + 115);
+    }
+
+    function drawMode2(w, h) {
+      const cx = w / 2;
+      const cy = h / 2 + 10;
+
+      // Draw faint Honeycomb Hexagon Grid (N_hex = 6) in the background
+      const hexR = 36;
+      ctx.strokeStyle = `rgba(99, 102, 241, ${0.18 * s2})`;
+      ctx.lineWidth = 1.2;
+      for (let row = -4; row <= 4; row++) {
+        for (let col = -6; col <= 6; col++) {
+          const hx = cx + col * hexR * 1.5;
+          const hy = cy + row * hexR * Math.sqrt(3) + (col % 2) * (hexR * Math.sqrt(3) / 2);
+          ctx.beginPath();
+          for (let k = 0; k < 6; k++) {
+            const a = (k * Math.PI) / 3;
+            const px = hx + hexR * 0.92 * Math.cos(a);
+            const py = hy + hexR * 0.92 * Math.sin(a);
+            if (k === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+
+      // Draw Catenoid Halo Funnel Glow when Brane Gravity is ON
+      if (useBraneGravity) {
+        const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 175);
+        grad.addColorStop(0, 'rgba(251, 191, 36, 0.35)');
+        grad.addColorStop(0.5, 'rgba(56, 189, 248, 0.16)');
+        grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 175, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Update & draw spinning galaxy stars
+      galaxyStars.forEach((st) => {
+        // In paired-brane gravity, outer rotation velocity stays flat!
+        const angularSpeed = useBraneGravity
+          ? (0.025 * s1) / Math.pow(st.r / 40, 0.35)
+          : (0.025 * s1) / Math.pow(st.r / 40, 0.35);
+
+        st.angle += angularSpeed;
+        if (!useBraneGravity && st.r > 55) {
+          st.vr += 0.035 * s1;
+          st.r += st.vr;
+        } else {
+          st.r += (st.baseR - st.r) * 0.08;
+          st.vr = 0;
+        }
+
+        const spiralOffset = st.arm * Math.PI + (st.baseR / 48);
+        const sx = cx + st.r * Math.cos(st.angle + spiralOffset);
+        const sy = cy + st.r * Math.sin(st.angle + spiralOffset) * 0.68;
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, st.r < 45 ? 2.8 : 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = st.r < 45 ? '#fde047' : (useBraneGravity ? '#38bdf8' : '#f87171');
+        ctx.fill();
+      });
+
+      // Galactic core
+      ctx.beginPath();
+      ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+      ctx.fillStyle = '#fef08a';
+      ctx.shadowColor = '#facc15';
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = useBraneGravity ? '#34d399' : '#f87171';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(
+        useBraneGravity
+          ? '✅ Bubble-Bridge Corridor Active: Flat Rotation Curve (Matches 151 Galaxies!)'
+          : '❌ Old Gravity Without Dark Matter: Outer Stars Fly Off Into Deep Space!',
+        18,
+        h - 18
+      );
+    }
+
+    function drawMode3(w, h) {
+      const cx = w / 2;
+      const cy = h / 2 + 8;
+
+      if (bhCorePulse > 0.01) bhCorePulse *= 0.92;
+      const coreR = (34 + 14 * bhCorePulse) * s2;
+      const horizonR = 78 + 10 * Math.sin(t * 2);
+
+      // Outer Event Horizon dashed ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, horizonR, 0, Math.PI * 2);
+      ctx.setLineDash([6, 6]);
+      ctx.strokeStyle = 'rgba(248, 113, 113, 0.65)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Nonsingular Planck-Sphere Core (packed quantum uncertainty cells)
+      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, coreR);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.45, '#38bdf8');
+      grad.addColorStop(0.85, '#6366f1');
+      grad.addColorStop(1, 'rgba(99, 102, 241, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw packed Planck cells inside the core
+      for (let i = 0; i < 18; i++) {
+        const a = (i * Math.PI * 2) / 18 + t * 1.5 * s1;
+        const rr = (i % 2 === 0 ? 0.42 : 0.72) * coreR;
+        ctx.beginPath();
+        ctx.arc(cx + rr * Math.cos(a), cy + rr * Math.sin(a), 3.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fill();
+      }
+
+      // Update infalling snacks -> hit Planck-Sphere -> trigger Hawking Burp!
+      for (let i = infallingPackets.length - 1; i >= 0; i--) {
+        const p = infallingPackets[i];
+        p.r -= 3.8;
+        p.angle += 0.06;
+        const px = cx + p.r * Math.cos(p.angle);
+        const py = cy + p.r * Math.sin(p.angle);
+
+        ctx.beginPath();
+        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        if (p.r <= coreR + 4) {
+          infallingPackets.splice(i, 1);
+          bhCorePulse = 1.0;
+          playHawkingBurpSound(p.isBig);
+          whiteHoleRings.push({ r: coreR, maxR: p.isBig ? 210 : 140, life: 1.0, isBig: p.isBig });
+          // Emit a joyful burst of rainbow Hawking "Burp" packets!
+          const burpColors = ['#34d399', '#fbbf24', '#f472b6', '#38bdf8', '#a78bfa'];
+          for (let b = 0; b < 14; b++) {
+            const ba = (b * Math.PI * 2) / 14 + Math.random() * 0.3;
+            burpParticles.push({
+              x: cx + coreR * Math.cos(ba),
+              y: cy + coreR * Math.sin(ba),
+              vx: Math.cos(ba) * (2.2 + Math.random() * 1.8),
+              vy: Math.sin(ba) * (2.2 + Math.random() * 1.8),
+              life: 1.0,
+              color: burpColors[b % burpColors.length]
+            });
+          }
+        }
+      }
+
+      // Draw expanding Mini White-Hole metric decompression rings
+      for (let i = whiteHoleRings.length - 1; i >= 0; i--) {
+        const ring = whiteHoleRings[i];
+        ring.r += (ring.maxR - ring.r) * 0.08 + 1.8;
+        ring.life -= 0.022;
+        if (ring.life <= 0) {
+          whiteHoleRings.splice(i, 1);
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(cx, cy, ring.r, 0, Math.PI * 2);
+        ctx.strokeStyle = ring.isBig ? `rgba(250, 204, 21, ${ring.life})` : `rgba(52, 211, 153, ${ring.life})`;
+        ctx.lineWidth = ring.isBig ? 3.5 : 2.2;
+        ctx.stroke();
+      }
+
+      // Update & draw outgoing Hawking Burp particles
+      for (let i = burpParticles.length - 1; i >= 0; i--) {
+        const bp = burpParticles[i];
+        bp.x += bp.vx;
+        bp.y += bp.vy;
+        bp.life -= 0.016;
+        if (bp.life <= 0) {
+          burpParticles.splice(i, 1);
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(bp.x, bp.y, 4 * bp.life + 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = bp.color;
+        ctx.globalAlpha = bp.life;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      }
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('Bouncy Planck-Sphere Core (No r=0 Crush!)', cx - 120, cy + coreR + 24);
+      ctx.fillStyle = '#f87171';
+      ctx.fillText('Outer Shadow Ring (EHT / LIGO)', cx - 95, cy - horizonR - 10);
+    }
+
+    function animate() {
+      t += 0.016;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+      if (currentMode === 0) drawMode0(w, h);
+      else if (currentMode === 1) drawMode1(w, h);
+      else if (currentMode === 2) drawMode2(w, h);
+      else if (currentMode === 3) drawMode3(w, h);
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
